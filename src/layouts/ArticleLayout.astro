@@ -1,0 +1,52 @@
+---
+import type { CollectionEntry } from "astro:content";
+import CategoryLinks from "../components/CategoryLinks.astro";
+import Infobox from "../components/Infobox.astro";
+import PageChrome from "../components/PageChrome.astro";
+import TableOfContents from "../components/TableOfContents.astro";
+import WikiShell from "./WikiShell.astro";
+
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface Props {
+  entry: CollectionEntry<"wiki">;
+  headings: Heading[];
+}
+
+const { entry, headings } = Astro.props;
+const { title, description, lead, updated, categories, infobox, type } = entry.data;
+---
+
+<WikiShell pageTitle={title} description={description} headings={headings}>
+  <article class:list={["wiki-article", { "wiki-article--main": type === "main" }]}>
+    <PageChrome title={title} description={description} updated={updated} />
+
+    <div class="article-body" data-pagefind-body>
+      {infobox && (
+        <div class="infobox-placement infobox-placement--desktop">
+          <Infobox {...infobox} />
+        </div>
+      )}
+      <p class="article-lead">{lead}</p>
+      {infobox && (
+        <div class="infobox-placement infobox-placement--mobile">
+          <Infobox {...infobox} />
+        </div>
+      )}
+
+      <div class="inline-toc">
+        <TableOfContents headings={headings} compact />
+      </div>
+
+      <div class="article-content">
+        <slot />
+      </div>
+
+      <CategoryLinks categories={categories} />
+    </div>
+  </article>
+</WikiShell>

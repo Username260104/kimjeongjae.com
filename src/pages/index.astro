@@ -1,0 +1,17 @@
+---
+import { getEntry, render } from "astro:content";
+import ArticleLayout from "../layouts/ArticleLayout.astro";
+
+const entry = await getEntry("wiki", "main-page");
+
+if (!entry) {
+  throw new Error("Main page content was not found.");
+}
+
+const { Content, headings: renderedHeadings } = await render(entry);
+const headings = entry.data.toc ?? renderedHeadings;
+---
+
+<ArticleLayout entry={entry} headings={headings}>
+  <Content />
+</ArticleLayout>

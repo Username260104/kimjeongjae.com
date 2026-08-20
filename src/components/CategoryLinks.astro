@@ -1,0 +1,16 @@
+---
+interface Props {
+  categories: string[];
+}
+
+const { categories } = Astro.props;
+---
+
+{categories.length > 0 && (
+  <nav class="category-links" aria-label="문서 분류">
+    <strong>분류:</strong>
+    <ul>
+      {categories.map((category) => <li><span>{category}</span></li>)}
+    </ul>
+  </nav>
+)}

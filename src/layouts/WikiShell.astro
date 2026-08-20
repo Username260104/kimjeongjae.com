@@ -1,0 +1,55 @@
+---
+import SiteHeader from "../components/SiteHeader.astro";
+import Sidebar from "../components/Sidebar.astro";
+import SiteFooter from "../components/SiteFooter.astro";
+import TableOfContents from "../components/TableOfContents.astro";
+import "../styles/wiki.css";
+
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface Props {
+  pageTitle: string;
+  description: string;
+  headings: Heading[];
+}
+
+const { pageTitle, description, headings } = Astro.props;
+const currentPath = Astro.url.pathname;
+const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site) : undefined;
+---
+
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={description} />
+    {canonical && <link rel="canonical" href={canonical} />}
+    <title>{pageTitle} - Kimjeongjae Wiki</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#wiki-content">본문으로 이동</a>
+    <SiteHeader currentPath={currentPath} />
+
+    <div class="wiki-frame">
+      <aside class="left-rail">
+        <Sidebar currentPath={currentPath} />
+      </aside>
+
+      <main class="wiki-main" id="wiki-content">
+        <slot />
+      </main>
+
+      <aside class="right-rail">
+        <TableOfContents headings={headings} />
+      </aside>
+    </div>
+
+    <SiteFooter />
+  </body>
+</html>

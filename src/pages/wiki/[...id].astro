@@ -1,0 +1,26 @@
+---
+import type { GetStaticPaths } from "astro";
+import { getCollection, render, type CollectionEntry } from "astro:content";
+import ArticleLayout from "../../layouts/ArticleLayout.astro";
+
+export const getStaticPaths = (async () => {
+  const entries = await getCollection("wiki", ({ data }) => data.type !== "main");
+
+  return entries.map((entry) => ({
+    params: { id: entry.id },
+    props: { entry },
+  }));
+}) satisfies GetStaticPaths;
+
+interface Props {
+  entry: CollectionEntry<"wiki">;
+}
+
+const { entry } = Astro.props;
+const { Content, headings: renderedHeadings } = await render(entry);
+const headings = entry.data.toc ?? renderedHeadings;
+---
+
+<ArticleLayout entry={entry} headings={headings}>
+  <Content />
+</ArticleLayout>

@@ -1,0 +1,14 @@
+---
+const base = import.meta.env.BASE_URL;
+const articleHref = `${base}wiki/kimjeongjae/`.replace(/\/+/g, "/");
+---
+
+<footer class="site-footer">
+  <p>Kimjeongjae Wiki는 개인 포트폴리오입니다. 외부 백과사전 프로젝트와 관련되거나 후원받지 않습니다.</p>
+  <nav aria-label="하단 탐색">
+    <a href={base}>대문</a>
+    <a href={articleHref}>김정재</a>
+    <span>Wiki 소개</span>
+    <span>면책 조항</span>
+  </nav>
+</footer>
