@@ -1,0 +1,16 @@
+---
+import type { CollectionEntry } from "astro:content";
+import PortalPanel from "./PortalPanel.astro";
+
+type Portal = NonNullable<CollectionEntry<"wiki">["data"]["portal"]>;
+
+interface Props {
+  panels: Portal["panels"];
+}
+
+const { panels } = Astro.props;
+---
+
+<div class="portal-grid">
+  {panels.map((panel) => <PortalPanel panel={panel} />)}
+</div>

@@ -1,0 +1,12 @@
+---
+interface Props {
+  term?: string;
+  text: string;
+}
+
+const { term, text } = Astro.props;
+---
+
+<aside class="wiki-notice" aria-label="Wiki 안내">
+  {term && <strong>{term}</strong>}{text}
+</aside>

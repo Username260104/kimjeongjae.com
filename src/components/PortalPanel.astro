@@ -1,0 +1,62 @@
+---
+import type { CollectionEntry } from "astro:content";
+
+type Portal = NonNullable<CollectionEntry<"wiki">["data"]["portal"]>;
+
+interface Props {
+  panel: Portal["panels"][number];
+}
+
+const { panel } = Astro.props;
+const { variant, eyebrow, heading, slug, body } = panel;
+
+const formatDate = (iso: string) => {
+  const [year, month, day] = iso.split("-");
+  return `${year}년 ${Number(month)}월 ${Number(day)}일`;
+};
+---
+
+<section class:list={["portal-panel", `portal-panel--${variant}`]}>
+  <header class="portal-panel__header">
+    <p>{eyebrow}</p>
+    <h2 id={slug}>{heading}</h2>
+  </header>
+
+  <div class="portal-panel__body">
+    {body.kind === "prose" && (
+      <>
+        {body.paragraphs.map((paragraph) => (
+          <p>{paragraph.term && <strong>{paragraph.term}</strong>}{paragraph.text}</p>
+        ))}
+        {body.more && (
+          <p class="portal-panel__more"><a href={body.more.href}>{body.more.label}</a></p>
+        )}
+      </>
+    )}
+
+    {body.kind === "index" && (
+      <dl class="portal-index">
+        {body.entries.map((entry) => (
+          <div>
+            <dt>{entry.href ? <a href={entry.href}>{entry.term}</a> : entry.term}</dt>
+            <dd>{entry.description}</dd>
+          </div>
+        ))}
+      </dl>
+    )}
+
+    {body.kind === "list" && (
+      <ul>
+        {body.items.map((item) => <li>{item}</li>)}
+      </ul>
+    )}
+
+    {body.kind === "changes" && (
+      <ol class="recent-list">
+        {body.entries.map((entry) => (
+          <li><time datetime={entry.date}>{formatDate(entry.date)}</time><span>{entry.summary}</span></li>
+        ))}
+      </ol>
+    )}
+  </div>
+</section>

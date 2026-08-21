@@ -1,6 +1,8 @@
 ---
 import { getEntry, render } from "astro:content";
 import ArticleLayout from "../layouts/ArticleLayout.astro";
+import PortalGrid from "../components/PortalGrid.astro";
+import WikiNotice from "../components/WikiNotice.astro";
 
 const entry = await getEntry("wiki", "main-page");
 
@@ -10,8 +12,11 @@ if (!entry) {
 
 const { Content, headings: renderedHeadings } = await render(entry);
 const headings = entry.data.toc ?? renderedHeadings;
+const { portal, notice } = entry.data;
 ---
 
 <ArticleLayout entry={entry} headings={headings}>
+  {portal && <PortalGrid panels={portal.panels} />}
   <Content />
+  {notice && <WikiNotice {...notice} />}
 </ArticleLayout>
