@@ -1,0 +1,37 @@
+---
+import { categoryHref, documentHref, formatUpdated, type WikiEntry } from "../lib/wiki";
+
+interface Props {
+  documents: WikiEntry[];
+  /** 분류 페이지에서는 그 분류를 다시 보여줄 필요가 없다. */
+  hideCategory?: string;
+}
+
+const { documents, hideCategory } = Astro.props;
+---
+
+{documents.length > 0 ? (
+  <ul class="document-list">
+    {documents.map((document) => {
+      const categories = document.data.categories.filter((name) => name !== hideCategory);
+      return (
+        <li>
+          <a class="document-list__title" href={documentHref(document.id)}>
+            {document.data.title}
+          </a>
+          <p class="document-list__summary">{document.data.description}</p>
+          <p class="document-list__meta">
+            {categories.map((name) => (
+              <a class="category-chip" href={categoryHref(name)}>{name}</a>
+            ))}
+            <time datetime={document.data.updated.toISOString().slice(0, 10)}>
+              {formatUpdated(document.data.updated)}
+            </time>
+          </p>
+        </li>
+      );
+    })}
+  </ul>
+) : (
+  <p class="document-list__empty">아직 문서가 없습니다.</p>
+)}

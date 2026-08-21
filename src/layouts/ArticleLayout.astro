@@ -26,6 +26,11 @@ interface ArticleData {
   categories?: string[];
   infobox?: WikiData["infobox"];
   type?: WikiData["type"];
+  /**
+   * 검색 색인에 넣을지 여부. 문서만 true 로 둔다.
+   * 목록·분류·검색처럼 자동 생성된 페이지는 무엇을 검색해도 걸리므로 제외한다.
+   */
+  indexed?: boolean;
 }
 
 interface Props {
@@ -34,14 +39,14 @@ interface Props {
 }
 
 const { data, headings } = Astro.props;
-const { title, description, lead, updated, categories = [], infobox, type } = data;
+const { title, description, lead, updated, categories = [], infobox, type, indexed = true } = data;
 ---
 
 <WikiShell pageTitle={title} description={description} headings={headings}>
   <article class:list={["wiki-article", { "wiki-article--main": type === "main" }]}>
     <PageChrome title={title} description={description} updated={updated} />
 
-    <div class="article-body" data-pagefind-body>
+    <div class="article-body" data-pagefind-body={indexed ? true : undefined}>
       {infobox && (
         <div class="infobox-placement infobox-placement--desktop">
           <Infobox {...infobox} />

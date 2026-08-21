@@ -1,0 +1,41 @@
+---
+import ArticleLayout from "../../layouts/ArticleLayout.astro";
+import DocumentList from "../../components/DocumentList.astro";
+import { getCategories, getDocuments } from "../../lib/wiki";
+
+const documents = await getDocuments();
+const categories = await getCategories();
+
+const updated = documents.reduce<Date>(
+  (latest, document) => (document.data.updated > latest ? document.data.updated : latest),
+  new Date(0),
+);
+---
+
+<ArticleLayout
+  data={{
+    title: "모든 문서",
+    description: "이 Wiki에 있는 문서 전체 목록",
+    lead: `이 Wiki에는 문서 ${documents.length}개가 있다. 제목 가나다순으로 정렬한다.`,
+    updated,
+    type: "document",
+    indexed: false,
+  }}
+  headings={[]}
+>
+  <DocumentList documents={documents} />
+
+  {categories.length > 0 && (
+    <>
+      <h2 id="categories">분류</h2>
+      <ul class="category-index">
+        {categories.map((category) => (
+          <li>
+            <a href={category.href}>{category.name}</a>
+            <span class="category-index__count">문서 {category.count}개</span>
+          </li>
+        ))}
+      </ul>
+    </>
+  )}
+</ArticleLayout>

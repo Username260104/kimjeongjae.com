@@ -20,6 +20,8 @@ interface Props {
 const { pageTitle, description, headings } = Astro.props;
 const currentPath = Astro.url.pathname;
 const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site) : undefined;
+const siteName = "Kimjeongjae Wiki";
+const fullTitle = `${pageTitle} - ${siteName}`;
 ---
 
 <!doctype html>
@@ -30,7 +32,15 @@ const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site) : undefin
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={description} />
     {canonical && <link rel="canonical" href={canonical} />}
-    <title>{pageTitle} - Kimjeongjae Wiki</title>
+    <title>{fullTitle}</title>
+
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content={siteName} />
+    <meta property="og:locale" content="ko_KR" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    {canonical && <meta property="og:url" content={canonical} />}
+    <meta name="twitter:card" content="summary" />
   </head>
   <body>
     <a class="skip-link" href="#wiki-content">본문으로 이동</a>

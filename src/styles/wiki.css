@@ -635,6 +635,123 @@ a:visited {
   font-size: 12px;
 }
 
+.search-page__form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  margin: 0 0 14px;
+}
+
+.search-page__label {
+  flex-basis: 100%;
+  font-weight: 700;
+}
+
+.search-page__form input {
+  flex: 1 1 200px;
+  min-width: 0;
+  padding: 5px 8px;
+  border: 1px solid var(--color-border);
+  background: #fff;
+}
+
+.search-page__form button {
+  padding: 5px 12px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  cursor: pointer;
+}
+
+.search-page__status {
+  margin: 0 0 12px;
+  color: var(--color-muted);
+}
+
+.document-list mark {
+  padding: 0 1px;
+  background: #fdf3c8;
+  color: inherit;
+}
+
+.document-list {
+  margin: 0 0 20px;
+  padding: 0;
+  list-style: none;
+}
+
+.document-list > li {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--color-rule);
+}
+
+.document-list > li:first-child {
+  padding-top: 0;
+}
+
+.document-list > li:last-child {
+  border-bottom: 0;
+}
+
+.document-list__title {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.document-list__summary {
+  margin: 3px 0 0;
+  color: var(--color-muted);
+}
+
+.document-list__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 8px;
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: var(--color-subtle);
+}
+
+.category-chip {
+  padding: 1px 6px;
+  border: 1px solid var(--color-border-light);
+  background: var(--color-surface);
+  font-size: 12px;
+}
+
+.document-list__meta time {
+  margin-left: auto;
+}
+
+.document-list__empty {
+  margin: 0;
+  color: var(--color-muted);
+}
+
+.category-index {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.category-index > li {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--color-rule);
+}
+
+.category-index > li:last-child {
+  border-bottom: 0;
+}
+
+.category-index__count {
+  color: var(--color-subtle);
+  font-size: 12px;
+}
+
 .recent-kind {
   margin-left: 6px;
   color: var(--color-subtle);

@@ -76,3 +76,93 @@ test("목차 항목이 실제 문서 위치와 연결된다", async () => {
     assert.ok(html.includes(`id="${target}"`), `목차가 가리키는 ${target} 위치가 없습니다`);
   }
 });
+
+test("모든 문서 목록이 만들어진다", async () => {
+  const html = await readOutput("wiki/index.html");
+
+  assert.ok(html.includes("모든 문서 - Kimjeongjae Wiki"));
+  assert.ok(html.includes('href="/wiki/kimjeongjae/"'), "김정재 문서가 목록에 없습니다");
+  assert.ok(html.includes("document-list"));
+  // 분류 색인도 함께 보여준다
+  assert.ok(html.includes('href="/wiki/category/인물/"'));
+});
+
+test("분류 페이지가 분류마다 만들어진다", async () => {
+  const html = await readOutput("wiki/category/인물/index.html");
+
+  assert.ok(html.includes("분류: 인물 - Kimjeongjae Wiki"));
+  assert.ok(html.includes('href="/wiki/kimjeongjae/"'), "해당 분류의 문서가 없습니다");
+});
+
+test("문서의 분류가 실제 링크로 연결된다", async () => {
+  const html = await readOutput("wiki/kimjeongjae/index.html");
+  const block = html.slice(
+    html.indexOf('class="category-links"'),
+    html.indexOf("</nav>", html.indexOf('class="category-links"')),
+  );
+
+  assert.ok(block.includes('href="/wiki/category/인물/"'));
+  assert.ok(!block.includes("<span>"), "분류가 아직 글자로만 표시됩니다");
+});
+
+test("검색 페이지와 검색 인덱스가 만들어진다", async () => {
+  const html = await readOutput("wiki/search/index.html");
+  assert.ok(html.includes("검색 - Kimjeongjae Wiki"));
+  assert.ok(html.includes("/pagefind/pagefind.js"));
+
+  const entry = await readOutput("pagefind/pagefind-entry.json");
+  assert.ok(JSON.parse(entry).languages, "검색 인덱스가 비어 있습니다");
+});
+
+test("자동 생성 목록 페이지는 검색 색인에서 제외된다", async () => {
+  const indexed = ["index.html", "wiki/kimjeongjae/index.html"];
+  const excluded = [
+    "wiki/index.html",
+    "wiki/category/인물/index.html",
+    "wiki/recent-changes/index.html",
+    "wiki/search/index.html",
+  ];
+
+  for (const page of indexed) {
+    assert.ok((await readOutput(page)).includes("data-pagefind-body"), `${page} 가 색인에서 빠졌습니다`);
+  }
+  for (const page of excluded) {
+    assert.ok(!(await readOutput(page)).includes("data-pagefind-body"), `${page} 가 색인에 들어갔습니다`);
+  }
+});
+
+test("화면에 동작하지 않는 항목이 남아 있지 않다", async () => {
+  const html = await readOutput("index.html");
+
+  assert.ok(!html.includes("sidebar-link--disabled"), "사이드바에 죽은 항목이 있습니다");
+  assert.ok(!html.includes("page-tab--disabled"), "문서 탭에 죽은 항목이 있습니다");
+  assert.ok(!html.includes("disabled"), "비활성 입력이 남아 있습니다");
+});
+
+test("없는 주소로 들어오면 안내 문서를 보여준다", async () => {
+  const html = await readOutput("404.html");
+
+  assert.ok(html.includes("없는 문서를 발견하셨습니다"));
+  // 막다른 길이 되지 않도록 다음 행동을 준다
+  assert.ok(html.includes('href="/wiki/search/"'));
+  assert.ok(html.includes('href="/wiki/"'));
+  assert.ok(!html.includes("data-pagefind-body"), "404 는 검색 색인에서 빠져야 합니다");
+});
+
+test("검색엔진이 읽을 sitemap 과 robots 가 있다", async () => {
+  const robots = await readOutput("robots.txt");
+  assert.match(robots, /Sitemap: https:\/\/kimjeongjae\.com\/sitemap-index\.xml/);
+
+  const sitemap = await readOutput("sitemap-0.xml");
+  assert.ok(sitemap.includes("https://kimjeongjae.com/wiki/kimjeongjae/"), "문서가 sitemap 에 없습니다");
+  assert.ok(!sitemap.includes("/wiki/search/"), "검색 페이지는 sitemap 에서 빼야 합니다");
+});
+
+test("링크를 공유할 때 제목과 설명이 보인다", async () => {
+  const html = await readOutput("wiki/kimjeongjae/index.html");
+
+  assert.ok(html.includes('property="og:title" content="김정재 - Kimjeongjae Wiki"'));
+  assert.ok(html.includes('property="og:description"'));
+  assert.ok(html.includes('property="og:url" content="https://kimjeongjae.com/wiki/kimjeongjae/"'));
+  assert.ok(html.includes('name="twitter:card"'));
+});

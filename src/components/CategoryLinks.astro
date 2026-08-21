@@ -1,4 +1,6 @@
 ---
+import { categoryHref } from "../lib/wiki";
+
 interface Props {
   categories: string[];
 }
@@ -10,7 +12,9 @@ const { categories } = Astro.props;
   <nav class="category-links" aria-label="문서 분류">
     <strong>분류:</strong>
     <ul>
-      {categories.map((category) => <li><span>{category}</span></li>)}
+      {categories.map((category) => (
+        <li><a href={categoryHref(category)}>{category}</a></li>
+      ))}
     </ul>
   </nav>
 )}

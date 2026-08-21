@@ -25,6 +25,36 @@ npm run edit
 **이 설정에 없는 frontmatter 항목은 저장할 때 파일에서 삭제되므로,
 `src/content.config.ts` 의 스키마와 항상 같은 항목을 유지해야 합니다.**
 
+## 사이트 구조
+
+| 주소 | 내용 |
+| --- | --- |
+| `/` | 대문 |
+| `/wiki/` | 모든 문서 목록과 분류 색인 |
+| `/wiki/{문서}/` | 문서 |
+| `/wiki/category/{분류}/` | 분류별 문서 목록 |
+| `/wiki/recent-changes/` | 변경 이력 |
+| `/wiki/search/` | 검색 |
+
+문서 목록, 분류 페이지, 사이드바 메뉴는 모두 `src/content/wiki` 의 문서에서 자동으로 만들어집니다
+(`src/lib/wiki.ts`). 문서를 추가하면 목록과 분류에 저절로 나타나므로 메뉴를 따로 고치지 않습니다.
+
+## 검색엔진 노출
+
+- `sitemap-index.xml` / `sitemap-0.xml`: `@astrojs/sitemap` 이 빌드 때 생성합니다. 검색 결과 페이지는 제외합니다.
+- `public/robots.txt`: sitemap 위치를 알립니다. **도메인이 바뀌면 이 파일도 함께 고쳐야 합니다.**
+- 공유용 `og:` 태그는 `src/layouts/WikiShell.astro` 에서 문서 제목과 설명으로 만듭니다. 대표 이미지(`og:image`)는 아직 없습니다.
+- 없는 주소는 `src/pages/404.astro` 가 받습니다.
+
+## 검색
+
+`astro build` 가 끝나면 Pagefind 가 정적 HTML을 읽어 검색 인덱스를 만듭니다
+(설정은 `astro.config.mjs` 의 `pagefind` 통합).
+
+- **개발 서버에는 인덱스가 없습니다.** 검색 확인은 `npm run build && npm run preview` 로 합니다.
+- 목록·분류·검색처럼 자동 생성된 페이지는 색인에서 제외합니다. 무엇을 검색해도 걸려서 결과를 어지럽히기 때문입니다.
+- 색인 대상은 `ArticleLayout` 의 `indexed` 값으로 정합니다.
+
 ## 최근 변경
 
 대문의 `최근 변경` 패널과 `/wiki/recent-changes/` 페이지는 **Git 기록에서 자동으로 만들어집니다**

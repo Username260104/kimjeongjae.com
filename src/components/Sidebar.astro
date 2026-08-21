@@ -1,4 +1,10 @@
 ---
+import {
+  allDocumentsHref,
+  getCategories,
+  recentChangesHref,
+} from "../lib/wiki";
+
 interface Props {
   currentPath: string;
   compact?: boolean;
@@ -6,45 +12,49 @@ interface Props {
 
 const { currentPath, compact = false } = Astro.props;
 const base = import.meta.env.BASE_URL;
-const toPath = (path: string) => `${base}${path}`.replace(/\/+/g, "/");
 
+// 탐색 항목은 실제로 존재하는 페이지만 둔다.
 const links = [
-  { label: "대문", href: toPath(""), available: true },
-  { label: "김정재", href: toPath("wiki/kimjeongjae/"), available: true },
-  { label: "최근 변경", href: toPath("wiki/recent-changes/"), available: true },
-  { label: "프로젝트", available: false },
-  { label: "기술 스택", available: false },
-  { label: "연표", available: false },
-  { label: "연락처", available: false },
+  { label: "대문", href: base },
+  { label: "모든 문서", href: allDocumentsHref },
+  { label: "최근 변경", href: recentChangesHref },
 ];
 
+const categories = await getCategories();
+
 const normalize = (path: string) => (path.endsWith("/") ? path : `${path}/`);
+const isCurrent = (href: string) => normalize(currentPath) === normalize(href);
 ---
 
-<nav class:list={["sidebar-nav", { "sidebar-nav--compact": compact }]} aria-label={compact ? "모바일 둘러보기" : "둘러보기"}>
+<nav
+  class:list={["sidebar-nav", { "sidebar-nav--compact": compact }]}
+  aria-label={compact ? "모바일 둘러보기" : "둘러보기"}
+>
   <div class="sidebar-section">
     <h2>둘러보기</h2>
     <ul>
       {links.map((link) => (
         <li>
-          {link.available && link.href ? (
-            <a href={link.href} aria-current={normalize(currentPath) === normalize(link.href) ? "page" : undefined}>
-              {link.label}
-            </a>
-          ) : (
-            <span class="sidebar-link--disabled">{link.label}</span>
-          )}
+          <a href={link.href} aria-current={isCurrent(link.href) ? "page" : undefined}>
+            {link.label}
+          </a>
         </li>
       ))}
     </ul>
   </div>
 
-  <div class="sidebar-section sidebar-section--secondary">
-    <h2>Wiki</h2>
-    <ul>
-      <li><span class="sidebar-link--disabled">소개</span></li>
-      <li><span class="sidebar-link--disabled">면책 조항</span></li>
-      <li><span class="sidebar-link--disabled">문서 작성 원칙</span></li>
-    </ul>
-  </div>
+  {categories.length > 0 && (
+    <div class="sidebar-section sidebar-section--secondary">
+      <h2>분류</h2>
+      <ul>
+        {categories.map((category) => (
+          <li>
+            <a href={category.href} aria-current={isCurrent(category.href) ? "page" : undefined}>
+              {category.name}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )}
 </nav>
