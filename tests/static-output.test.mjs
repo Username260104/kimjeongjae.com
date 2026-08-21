@@ -35,8 +35,36 @@ test("대문 포털이 문서 데이터에서 생성된다", async () => {
 
   assert.ok(html.includes('<h2 id="featured-article">김정재</h2>'));
   assert.ok(html.includes('<dl class="portal-index">'));
-  assert.ok(html.includes('<time datetime="2026-07-10">2026년 7월 10일</time>'));
   assert.ok(html.includes('class="wiki-notice"'));
+});
+
+test("대문의 최근 변경이 Git 기록에서 만들어진다", async () => {
+  const html = await readOutput("index.html");
+  const panel = html.slice(
+    html.indexOf("portal-panel--changes"),
+    html.indexOf("</section>", html.indexOf("portal-panel--changes")),
+  );
+
+  assert.ok(panel.includes("recent-list"), "최근 변경 목록이 없습니다");
+  assert.match(panel, /<time datetime="\d{4}-\d{2}-\d{2}">/, "날짜가 없습니다");
+  assert.match(panel, /class="recent-kind">(신규|수정)</, "변경 종류가 없습니다");
+  // 자동 생성이므로 항목마다 실제 문서로 가는 링크가 있어야 한다.
+  assert.match(panel, /<a href="\/[^"]*">[^<]+<\/a>/, "문서 링크가 없습니다");
+});
+
+test("최근 변경 전체 목록 페이지가 만들어진다", async () => {
+  const html = await readOutput("wiki/recent-changes/index.html");
+
+  assert.ok(html.includes("최근 변경 - Kimjeongjae Wiki"));
+  assert.ok(html.includes("recent-list"));
+  assert.match(html, /<time datetime="\d{4}-\d{2}-\d{2}">/);
+  assert.ok(html.includes('href="/wiki/kimjeongjae/"'), "김정재 문서 링크가 없습니다");
+  assert.ok(!html.includes("__NEXT_DATA__"));
+});
+
+test("사이드바에서 최근 변경으로 이동할 수 있다", async () => {
+  const html = await readOutput("index.html");
+  assert.ok(html.includes('href="/wiki/recent-changes/"'));
 });
 
 test("목차 항목이 실제 문서 위치와 연결된다", async () => {

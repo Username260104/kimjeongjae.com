@@ -15,8 +15,8 @@ const headings = entry.data.toc ?? renderedHeadings;
 const { portal, notice } = entry.data;
 ---
 
-<ArticleLayout entry={entry} headings={headings}>
-  {portal && <PortalGrid panels={portal.panels} />}
+<ArticleLayout data={entry.data} headings={headings}>
+  {portal && <PortalGrid panels={portal} />}
   <Content />
   {notice && <WikiNotice {...notice} />}
 </ArticleLayout>

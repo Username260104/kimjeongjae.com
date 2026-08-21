@@ -6,19 +6,35 @@ import PageChrome from "../components/PageChrome.astro";
 import TableOfContents from "../components/TableOfContents.astro";
 import WikiShell from "./WikiShell.astro";
 
+type WikiData = CollectionEntry<"wiki">["data"];
+
 interface Heading {
   depth: number;
   slug: string;
   text: string;
 }
 
+/**
+ * 문서 컬렉션 항목뿐 아니라 자동 생성 페이지(예: 최근 변경)도 같은 조판을 쓰도록
+ * 컬렉션 타입 대신 필요한 값만 받는다.
+ */
+interface ArticleData {
+  title: string;
+  description: string;
+  lead: string;
+  updated: Date;
+  categories?: string[];
+  infobox?: WikiData["infobox"];
+  type?: WikiData["type"];
+}
+
 interface Props {
-  entry: CollectionEntry<"wiki">;
+  data: ArticleData;
   headings: Heading[];
 }
 
-const { entry, headings } = Astro.props;
-const { title, description, lead, updated, categories, infobox, type } = entry.data;
+const { data, headings } = Astro.props;
+const { title, description, lead, updated, categories = [], infobox, type } = data;
 ---
 
 <WikiShell pageTitle={title} description={description} headings={headings}>

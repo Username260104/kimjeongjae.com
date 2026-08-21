@@ -1,0 +1,25 @@
+---
+import type { RecentChange } from "../lib/recent-changes";
+
+interface Props {
+  changes: RecentChange[];
+}
+
+const { changes } = Astro.props;
+---
+
+{changes.length > 0 ? (
+  <ol class="recent-list">
+    {changes.map((change) => (
+      <li>
+        <time datetime={change.date}>{change.label}</time>
+        <span>
+          <a href={change.href}>{change.title}</a>
+          <span class="recent-kind">{change.kind}</span>
+        </span>
+      </li>
+    ))}
+  </ol>
+) : (
+  <p class="recent-empty">아직 기록된 변경이 없습니다.</p>
+)}

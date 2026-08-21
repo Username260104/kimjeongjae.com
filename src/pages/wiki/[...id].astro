@@ -21,6 +21,6 @@ const { Content, headings: renderedHeadings } = await render(entry);
 const headings = entry.data.toc ?? renderedHeadings;
 ---
 
-<ArticleLayout entry={entry} headings={headings}>
+<ArticleLayout data={entry.data} headings={headings}>
   <Content />
 </ArticleLayout>

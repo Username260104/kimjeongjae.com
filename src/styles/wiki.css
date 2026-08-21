@@ -635,6 +635,17 @@ a:visited {
   font-size: 12px;
 }
 
+.recent-kind {
+  margin-left: 6px;
+  color: var(--color-subtle);
+  font-size: 12px;
+}
+
+.recent-empty {
+  margin: 0;
+  color: var(--color-muted);
+}
+
 .wiki-notice {
   margin-top: 16px;
   padding: 9px 12px;

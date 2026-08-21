@@ -11,6 +11,7 @@ const toPath = (path: string) => `${base}${path}`.replace(/\/+/g, "/");
 const links = [
   { label: "대문", href: toPath(""), available: true },
   { label: "김정재", href: toPath("wiki/kimjeongjae/"), available: true },
+  { label: "최근 변경", href: toPath("wiki/recent-changes/"), available: true },
   { label: "프로젝트", available: false },
   { label: "기술 스택", available: false },
   { label: "연표", available: false },

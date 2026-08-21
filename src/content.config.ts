@@ -11,32 +11,55 @@ const richText = z.object({
   text: z.string(),
 });
 
-const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "YYYY-MM-DD 형식이어야 합니다.");
+/**
+ * 대문 패널.
+ *
+ * `{ discriminant, value }` 모양은 편집기(Keystatic)의 블록 저장 형식이다.
+ * 편집기 설정(keystatic.config.ts)과 짝을 이루므로 임의로 바꾸지 않는다.
+ */
+const panelHeader = {
+  variant: z.enum(["featured", "explore", "facts", "changes"]),
+  eyebrow: z.string(),
+  heading: z.string(),
+  slug: z.string(),
+};
 
-/** 대문 패널의 본문 종류. 편집기의 블록 하나에 대응한다. */
-const portalPanelBody = z.discriminatedUnion("kind", [
+const linkField = z.object({ label: z.string(), href: z.string() }).optional();
+
+const portalPanel = z.discriminatedUnion("discriminant", [
   z.object({
-    kind: z.literal("prose"),
-    paragraphs: z.array(richText),
-    more: z.object({ label: z.string(), href: z.string() }).optional(),
+    discriminant: z.literal("prose"),
+    value: z.object({
+      ...panelHeader,
+      paragraphs: z.array(richText),
+      more: linkField,
+    }),
   }),
   z.object({
-    kind: z.literal("index"),
-    entries: z.array(
-      z.object({
-        term: z.string(),
-        description: z.string(),
-        href: z.string().optional(),
-      }),
-    ),
+    discriminant: z.literal("index"),
+    value: z.object({
+      ...panelHeader,
+      entries: z.array(
+        z.object({
+          term: z.string(),
+          description: z.string(),
+          href: z.string().optional(),
+        }),
+      ),
+    }),
   }),
   z.object({
-    kind: z.literal("list"),
-    items: z.array(z.string()),
+    discriminant: z.literal("list"),
+    value: z.object({ ...panelHeader, items: z.array(z.string()) }),
   }),
+  // 최근 변경 목록은 Git 기록에서 자동으로 만든다(src/lib/recent-changes.ts).
+  // 문서에는 "몇 개를 보여줄지"만 저장한다.
   z.object({
-    kind: z.literal("changes"),
-    entries: z.array(z.object({ date: isoDate, summary: z.string() })),
+    discriminant: z.literal("changes"),
+    value: z.object({
+      ...panelHeader,
+      limit: z.number().int().min(1).max(50).default(5),
+    }),
   }),
 ]);
 
@@ -72,19 +95,7 @@ const wiki = defineCollection({
         ),
       })
       .optional(),
-    portal: z
-      .object({
-        panels: z.array(
-          z.object({
-            variant: z.enum(["featured", "explore", "facts", "changes"]),
-            eyebrow: z.string(),
-            heading: z.string(),
-            slug: z.string(),
-            body: portalPanelBody,
-          }),
-        ),
-      })
-      .optional(),
+    portal: z.array(portalPanel).optional(),
     notice: richText.optional(),
   }),
 });
