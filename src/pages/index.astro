@@ -1,22 +1,39 @@
 ---
-import { getEntry, render } from "astro:content";
-import ArticleLayout from "../layouts/ArticleLayout.astro";
-import PortalGrid from "../components/PortalGrid.astro";
-import WikiNotice from "../components/WikiNotice.astro";
-
-const entry = await getEntry("wiki", "main-page");
-
-if (!entry) {
-  throw new Error("Main page content was not found.");
-}
-
-const { Content, headings: renderedHeadings } = await render(entry);
-const headings = entry.data.toc ?? renderedHeadings;
-const { portal, notice } = entry.data;
+const canonical = Astro.site ? new URL("/", Astro.site) : undefined;
 ---
 
-<ArticleLayout data={entry.data} headings={headings}>
-  {portal && <PortalGrid panels={portal} />}
-  <Content />
-  {notice && <WikiNotice {...notice} />}
-</ArticleLayout>
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {canonical && <link rel="canonical" href={canonical} />}
+    <title>Kimjeongjae</title>
+  </head>
+  <body>
+    <main>
+      <img src="/images/main.jpg" alt="메인 사진" width="360" height="480" />
+    </main>
+  </body>
+</html>
+
+<style>
+  :global(body) {
+    margin: 0;
+    background: #fff;
+  }
+
+  main {
+    display: grid;
+    min-height: 100svh;
+    place-items: center;
+  }
+
+  img {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 100svh;
+  }
+</style>
