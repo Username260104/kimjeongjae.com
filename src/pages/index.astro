@@ -1,5 +1,8 @@
 ---
 const canonical = Astro.site ? new URL("/", Astro.site) : undefined;
+const siteTitle = "Kimjeongjae";
+const description = "kimjeongjae.com";
+const previewImage = new URL("/images/link-preview.png", Astro.site ?? Astro.url);
 ---
 
 <!doctype html>
@@ -7,6 +10,23 @@ const canonical = Astro.site ? new URL("/", Astro.site) : undefined;
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="robots" content="nosnippet, noimageindex, max-image-preview:none" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={siteTitle} />
+    <meta property="og:title" content={siteTitle} />
+    <meta property="og:description" content={description} />
+    {canonical && <meta property="og:url" content={canonical} />}
+    <meta property="og:image" content={previewImage} />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={siteTitle} />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={siteTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={previewImage} />
+    <meta name="twitter:image:alt" content={siteTitle} />
     <link
       rel="preload"
       href="/fonts/noto-serif-kr-title.ttf"
@@ -15,7 +35,7 @@ const canonical = Astro.site ? new URL("/", Astro.site) : undefined;
       crossorigin="anonymous"
     />
     {canonical && <link rel="canonical" href={canonical} />}
-    <title>Kimjeongjae</title>
+    <title>{siteTitle}</title>
   </head>
   <body>
     <main>

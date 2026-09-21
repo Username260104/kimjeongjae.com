@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /images/main.jpg
 
 Sitemap: https://kimjeongjae.com/sitemap-index.xml

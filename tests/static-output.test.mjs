@@ -28,7 +28,7 @@ test("배포 결과에는 메인과 필요한 정적 파일만 남는다", async
 
   assert.deepEqual(
     entries.filter((entry) => entry.isFile()).map((entry) => entry.name).sort(),
-    ["CNAME", "index.html", "main.jpg", "noto-serif-kr-title.ttf", "OFL.txt", "robots.txt", "sitemap-0.xml", "sitemap-index.xml"].sort(),
+    ["CNAME", "index.html", "link-preview.png", "main.jpg", "noto-serif-kr-title.ttf", "OFL.txt", "robots.txt", "sitemap-0.xml", "sitemap-index.xml"].sort(),
   );
   assert.deepEqual(
     entries.filter((entry) => entry.isDirectory()).map((entry) => entry.name).sort(),
