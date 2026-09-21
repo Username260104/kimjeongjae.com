@@ -61,10 +61,9 @@ const canonical = Astro.site ? new URL("/", Astro.site) : undefined;
 
   img {
     display: block;
-    width: auto;
+    /* Scale the original 360×480 photo with the 1280×720 desktop composition. */
+    width: min(360px, 28.125vw, 50svh);
     height: auto;
-    max-width: 100%;
-    max-height: 100svh;
   }
 
   h1 {
