@@ -1,6 +1,7 @@
 # Kimjeongjae
 
-메인(`/`)에 사진 한 장만 표시하는 Astro 정적 사이트입니다.
+메인(`/`)에 사진과 검은색 명조체 문구를 표시하는 Astro 정적 사이트입니다.
+문구는 사진 앞쪽에서 화면 중앙에 겹쳐 표시되며, 화면 너비에 맞춰 크기가 조절됩니다.
 
 ## 로컬 실행
 
@@ -15,6 +16,8 @@ npm run dev
 
 - `src/pages/index.astro`: 사진 메인
 - `public/images/main.jpg`: 메인 사진
+- `public/fonts/noto-serif-kr-title.ttf`: 문구용 Noto Serif KR Regular 글꼴
+- `public/fonts/OFL.txt`: 글꼴의 SIL Open Font License
 - `public/CNAME`: 공개 도메인
 - `public/robots.txt`: 검색엔진 안내
 

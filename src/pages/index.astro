@@ -7,23 +7,53 @@ const canonical = Astro.site ? new URL("/", Astro.site) : undefined;
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="preload"
+      href="/fonts/noto-serif-kr-title.ttf"
+      as="font"
+      type="font/ttf"
+      crossorigin="anonymous"
+    />
     {canonical && <link rel="canonical" href={canonical} />}
     <title>Kimjeongjae</title>
   </head>
   <body>
     <main>
       <img src="/images/main.jpg" alt="메인 사진" width="360" height="480" />
+      <h1 aria-label="씨발">
+        <!-- Bundled font's glyph bounds keep the visible letters at both edges. -->
+        <svg
+          viewBox="44 -854 1884 963"
+          width="1884"
+          height="963"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <text x="0" y="0" font-size="1000">씨발</text>
+        </svg>
+      </h1>
     </main>
   </body>
 </html>
 
 <style>
+  @font-face {
+    font-family: "Title Myeongjo";
+    src: url("/fonts/noto-serif-kr-title.ttf") format("truetype");
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+  }
+
   :global(body) {
     margin: 0;
     background: #fff;
   }
 
   main {
+    position: relative;
+    isolation: isolate;
     display: grid;
     min-height: 100svh;
     place-items: center;
@@ -35,5 +65,28 @@ const canonical = Astro.site ? new URL("/", Astro.site) : undefined;
     height: auto;
     max-width: 100%;
     max-height: 100svh;
+  }
+
+  h1 {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    margin: 0;
+    color: #000;
+    font-family: "Title Myeongjo", "Batang", "AppleMyungjo", serif;
+    font-weight: 400;
+    font-synthesis: none;
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 100svh;
+    fill: currentColor;
   }
 </style>
