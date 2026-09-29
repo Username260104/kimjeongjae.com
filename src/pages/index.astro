@@ -150,6 +150,7 @@ const previewImage = new URL("/images/link-preview.png", Astro.site ?? Astro.url
       }
 
       document.fonts.load(titleFont, word).then(fitWord, fitWord);
+      document.addEventListener("click", () => window.location.reload(), { once: true });
     </script>
   </body>
 </html>
