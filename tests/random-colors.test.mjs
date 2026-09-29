@@ -11,6 +11,7 @@ const script = new Script(source);
 function pageSession() {
   const state = { saved: null, random: 0, hue: null, blockRead: false, blockWrite: false };
   const context = createContext({
+    window: {},
     Math: Object.assign(Object.create(Math), { random: () => state.random }),
     sessionStorage: {
       getItem() {
@@ -27,10 +28,22 @@ function pageSession() {
       state.hue = Number(value);
     } } } },
   });
-  return { state, reload: () => script.runInContext(context) };
+  return { state, reload: () => script.runInContext(context), refresh: () => context.window.randomizeColors() };
 }
 
 const distance = (a, b) => Math.min(Math.abs(a - b), 360 - Math.abs(a - b));
+
+test("페이지 내부에서 반복 선택해도 저장소 없이 직전 색상을 피한다", () => {
+  const { state, reload, refresh } = pageSession();
+  state.blockRead = state.blockWrite = true;
+  reload();
+  for (let index = 0; index < 100; index++) {
+    const previous = state.hue;
+    state.random = (index + 0.5) / 100;
+    refresh();
+    assert.ok(distance(previous, state.hue) > 30);
+  }
+});
 
 test("첫 방문에는 360개 색상각을 모두 선택할 수 있다", () => {
   const { state, reload } = pageSession();

@@ -19,13 +19,14 @@ const previewImage = new URL("/images/link-preview.png", Astro.site ?? Astro.url
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/png" sizes="64x64" href="/favicon-python.png" />
     <script is:inline>
-      (() => {
+      window.randomizeFont = () => {
         const previewFont = new URLSearchParams(window.location.search).get("font");
         document.documentElement.dataset.font =
           previewFont === "myeongjo" || previewFont === "gothic"
             ? previewFont
             : Math.random() < 0.5 ? "myeongjo" : "gothic";
-      })();
+      };
+      window.randomizeFont();
     </script>
     <script id="random-colors" is:inline>
       (() => {
@@ -42,18 +43,22 @@ const previewImage = new URL("/images/link-preview.png", Astro.site ?? Astro.url
           // Color selection still works when browser storage is unavailable.
         }
 
-        // Uniformly sample the allowed arc, including across the 359°/0° boundary.
-        const hue = previousHue === null
-          ? Math.floor(Math.random() * 360)
-          : (previousHue + excludedDistance + 1
-            + Math.floor(Math.random() * (360 - excludedDistance * 2 - 1))) % 360;
+        window.randomizeColors = () => {
+          // Uniformly sample the allowed arc, including across the 359°/0° boundary.
+          const hue = previousHue === null
+            ? Math.floor(Math.random() * 360)
+            : (previousHue + excludedDistance + 1
+              + Math.floor(Math.random() * (360 - excludedDistance * 2 - 1))) % 360;
 
-        document.documentElement.style.setProperty("--text-hue", String(hue));
-        try {
-          sessionStorage.setItem(storageKey, String(hue));
-        } catch {
-          // A failed save must not prevent the page from rendering.
-        }
+          previousHue = hue;
+          document.documentElement.style.setProperty("--text-hue", String(hue));
+          try {
+            sessionStorage.setItem(storageKey, String(hue));
+          } catch {
+            // A failed save must not prevent the page from rendering.
+          }
+        };
+        window.randomizeColors();
       })();
     </script>
     <meta name="description" content={description} />
@@ -113,23 +118,37 @@ const previewImage = new URL("/images/link-preview.png", Astro.site ?? Astro.url
       } catch {
         // Keep displaying words when browser storage is unavailable.
       }
-      const candidates = words.length > 1
-        ? words.filter((candidate) => candidate !== previousWord)
-        : words;
-      const word = candidates[Math.floor(Math.random() * candidates.length)];
-      const titleStyle = getComputedStyle(heading);
-      const titleFont = `${titleStyle.fontWeight} 1000px ${titleStyle.fontFamily}`;
-      // Choose once per visit, before the initial paint.
-      svg.style.visibility = "hidden";
-      heading.setAttribute("aria-label", word);
-      text.textContent = word;
-      try {
-        sessionStorage.setItem(wordStorageKey, word);
-      } catch {
-        // A failed save must not prevent the word from rendering.
+      let revision = 0;
+
+      function refreshContent(randomizeAppearance = true) {
+        const currentRevision = ++revision;
+        if (randomizeAppearance) {
+          window.randomizeFont();
+          window.randomizeColors();
+        }
+        const candidates = words.length > 1
+          ? words.filter((candidate) => candidate !== previousWord)
+          : words;
+        const word = candidates[Math.floor(Math.random() * candidates.length)];
+        previousWord = word;
+        const titleStyle = getComputedStyle(heading);
+        const titleFont = `${titleStyle.fontWeight} 1000px ${titleStyle.fontFamily}`;
+        heading.setAttribute("aria-label", word);
+        text.textContent = word;
+        try {
+          sessionStorage.setItem(wordStorageKey, word);
+        } catch {
+          // The in-memory previous word still prevents consecutive repeats.
+        }
+        fitWord(word, titleFont);
+        const fitLoadedWord = () => {
+          // A late font load must not resize a newer selection.
+          if (currentRevision === revision) fitWord(word, titleFont);
+        };
+        document.fonts.load(titleFont, word).then(fitLoadedWord, fitLoadedWord);
       }
 
-      function fitWord() {
+      function fitWord(word, titleFont) {
         const context = document.createElement("canvas").getContext("2d");
         let { x, y, width, height } = text.getBBox();
 
@@ -149,8 +168,8 @@ const previewImage = new URL("/images/link-preview.png", Astro.site ?? Astro.url
         svg.style.visibility = "visible";
       }
 
-      document.fonts.load(titleFont, word).then(fitWord, fitWord);
-      document.addEventListener("click", () => window.location.reload(), { once: true });
+      refreshContent(false);
+      document.addEventListener("click", () => refreshContent());
     </script>
   </body>
 </html>
@@ -170,6 +189,7 @@ const previewImage = new URL("/images/link-preview.png", Astro.site ?? Astro.url
 
   :global(body) {
     margin: 0;
+    touch-action: manipulation;
     background: hsl(calc(var(--text-hue) + 180) 100% 50%);
   }
 
