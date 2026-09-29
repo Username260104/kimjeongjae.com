@@ -1,4 +1,11 @@
 ---
+import wordList from "../../output/emotion-words/감정_단어_목록.md?raw";
+
+const words = wordList
+  .split(/\r?\n/)
+  .filter((line) => line.startsWith("- "))
+  .map((line) => line.slice(2).trim())
+  .filter(Boolean);
 const canonical = Astro.site ? new URL("/", Astro.site) : undefined;
 const siteTitle = "Kimjeongjae";
 const description = "kimjeongjae.com";
@@ -40,20 +47,58 @@ const previewImage = new URL("/images/link-preview.png", Astro.site ?? Astro.url
   <body>
     <main>
       <img src="/images/main.jpg" alt="메인 사진" width="360" height="480" />
-      <h1 aria-label="씨발">
-        <!-- Bundled font's glyph bounds keep the visible letters at both edges. -->
+      <h1 aria-label={words[0]}>
+        <!-- The first word remains available when JavaScript is disabled. -->
         <svg
-          viewBox="44 -854 1884 963"
-          width="1884"
-          height="963"
+          viewBox="34 -853 1758 970"
+          width="1758"
+          height="970"
           preserveAspectRatio="none"
           aria-hidden="true"
           focusable="false"
         >
-          <text x="0" y="0" font-size="1000">씨발</text>
+          <text x="0" y="0" font-size="1000">{words[0]}</text>
         </svg>
       </h1>
     </main>
+    <script id="emotion-words" type="application/json" is:inline set:html={JSON.stringify(words)} />
+    <script is:inline>
+      const words = JSON.parse(document.getElementById("emotion-words").textContent);
+      const heading = document.querySelector("h1");
+      const svg = heading.querySelector("svg");
+      const text = svg.querySelector("text");
+      const word = words[Math.floor(Math.random() * words.length)];
+      const hue = Math.floor(Math.random() * 360);
+
+      document.documentElement.style.setProperty("--text-hue", String(hue));
+
+      // Choose once per visit, before the initial paint.
+      svg.style.visibility = "hidden";
+      heading.setAttribute("aria-label", word);
+      text.textContent = word;
+
+      function fitWord() {
+        const context = document.createElement("canvas").getContext("2d");
+        let { x, y, width, height } = text.getBBox();
+
+        if (context) {
+          context.font = `400 1000px ${getComputedStyle(heading).fontFamily}`;
+          const bounds = context.measureText(word);
+          x = -bounds.actualBoundingBoxLeft;
+          y = -bounds.actualBoundingBoxAscent;
+          width = bounds.actualBoundingBoxLeft + bounds.actualBoundingBoxRight;
+          height = bounds.actualBoundingBoxAscent + bounds.actualBoundingBoxDescent;
+        }
+
+        // Fit the visible letter edges to the same full-width, centered overlay.
+        svg.setAttribute("viewBox", `${x} ${y} ${width} ${height}`);
+        svg.setAttribute("width", String(width));
+        svg.setAttribute("height", String(height));
+        svg.style.visibility = "visible";
+      }
+
+      document.fonts.load('400 1000px "Title Myeongjo"', word).then(fitWord, fitWord);
+    </script>
   </body>
 </html>
 
@@ -66,9 +111,13 @@ const previewImage = new URL("/images/link-preview.png", Astro.site ?? Astro.url
     font-display: swap;
   }
 
+  :global(:root) {
+    --text-hue: 0;
+  }
+
   :global(body) {
     margin: 0;
-    background: #fff;
+    background: hsl(calc(var(--text-hue) + 180) 100% 50%);
   }
 
   main {
@@ -93,7 +142,7 @@ const previewImage = new URL("/images/link-preview.png", Astro.site ?? Astro.url
     display: grid;
     place-items: center;
     margin: 0;
-    color: #000;
+    color: hsl(var(--text-hue) 100% 50%);
     font-family: "Title Myeongjo", "Batang", "AppleMyungjo", serif;
     font-weight: 400;
     font-synthesis: none;

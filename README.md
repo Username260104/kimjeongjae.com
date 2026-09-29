@@ -1,7 +1,11 @@
 # Kimjeongjae
 
-메인(`/`)에 사진과 검은색 명조체 문구를 표시하는 Astro 정적 사이트입니다.
+메인(`/`)을 열거나 새로고침할 때마다 204개 감정 단어 중 하나를 무작위로 뽑아 사진과 함께 표시하는 Astro 정적 사이트입니다.
 문구는 사진 앞쪽에서 화면 중앙에 겹쳐 표시되며, 화면 너비에 맞춰 크기가 조절됩니다.
+각 단어의 선택 확률은 같으며, 같은 단어가 연속으로 나올 수도 있습니다.
+텍스트 색상도 매번 무작위로 선택하며, 채도 100%·명도 50%를 유지합니다.
+배경은 텍스트 색상의 색상환에서 180도 반대에 있는 보색입니다.
+자바스크립트가 꺼져 있으면 목록의 첫 단어인 `감격`을 표시합니다.
 사진도 1280×720 화면에서의 360×480 배치를 기준으로 화면 너비와 높이에 맞춰 함께 줄어듭니다.
 
 ## 로컬 실행
@@ -16,9 +20,10 @@ npm run dev
 ## 파일
 
 - `src/pages/index.astro`: 사진 메인
+- `output/emotion-words/감정_단어_목록.md`: 화면에 표시할 감정 단어 목록
 - `public/images/main.jpg`: 메인 사진
 - `public/images/link-preview.png`: 내용이 없는 흰색 공유 미리보기 이미지
-- `public/fonts/noto-serif-kr-title.ttf`: 문구용 Noto Serif KR Regular 글꼴
+- `public/fonts/noto-serif-kr-title.ttf`: 목록 전체를 지원하는 Noto Serif KR Regular 글꼴
 - `public/fonts/OFL.txt`: 글꼴의 SIL Open Font License
 - `public/CNAME`: 공개 도메인
 - `public/robots.txt`: 검색엔진 안내
