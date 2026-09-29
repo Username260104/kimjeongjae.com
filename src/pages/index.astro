@@ -53,7 +53,7 @@ const previewImage = new URL("/images/link-preview.png", Astro.site ?? Astro.url
           viewBox="34 -853 1758 970"
           width="1758"
           height="970"
-          preserveAspectRatio="none"
+          preserveAspectRatio="xMidYMid meet"
           aria-hidden="true"
           focusable="false"
         >
@@ -90,7 +90,7 @@ const previewImage = new URL("/images/link-preview.png", Astro.site ?? Astro.url
           height = bounds.actualBoundingBoxAscent + bounds.actualBoundingBoxDescent;
         }
 
-        // Fit the visible letter edges to the same full-width, centered overlay.
+        // Keep tight glyph bounds; SVG scales both axes together before stretching.
         svg.setAttribute("viewBox", `${x} ${y} ${width} ${height}`);
         svg.setAttribute("width", String(width));
         svg.setAttribute("height", String(height));
@@ -151,10 +151,13 @@ const previewImage = new URL("/images/link-preview.png", Astro.site ?? Astro.url
   }
 
   svg {
+    --text-scale-y: 1.5;
     display: block;
     width: 100%;
-    height: auto;
-    max-height: 100svh;
+    /* Fit proportionally into this frame, then stretch it to the viewport height. */
+    height: calc(100svh / var(--text-scale-y));
+    transform: scaleY(var(--text-scale-y));
+    transform-origin: center;
     fill: currentColor;
   }
 </style>
